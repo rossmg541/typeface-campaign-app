@@ -1,4 +1,27 @@
-# Getting Started with Create React App
+# Typeface Campaign App
+
+A React-based landing page for generating on-brand campaigns instantly, built to match the Typeface design specifications.
+
+## Design Specifications
+
+### Colors
+- **Primary Red**: `#FD243E` (logo, "instantly" text, CTA buttons)
+- **Background Gradient**: `linear-gradient(180deg, #F4F4F4 0%, #D9D9D9 100%)`
+- **Text Black**: `#111013`
+- **Text Gray**: `rgba(17, 16, 19, 0.6)`
+
+### Typography
+- **Font Family**: Suisse Int'l
+- **Main Headline**: 51.6px, weight 400
+- **Subheading**: 16px, weight 450
+- **Navigation**: 15px, weight 400
+- **Button Text**: 15px, weight 500
+
+### Layout
+- **Input Field**: 620x62px with 16px top padding, 12px right/bottom/left padding
+- **Responsive**: Adapts to mobile and tablet screens
+
+## Getting Started
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
@@ -68,3 +91,41 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+## Project Structure
+
+```
+typeface-campaign-app/
+├── public/
+├── src/
+│   ├── assets/
+│   │   ├── Logo.png
+│   │   ├── Arrow_branch.png
+│   │   └── 3d-documents.png
+│   ├── App.js
+│   ├── App.css
+│   ├── index.js
+│   └── index.css
+└── package.json
+```
+
+## Features
+
+- Fully responsive design
+- Exact color matching to design specs
+- Custom Suisse Int'l font integration
+- Smooth hover animations
+- Clean, modern UI
+- Form submission handling (ready for backend integration)
+
+## Customization
+
+To modify the form submission behavior, update the `handleSubmit` function in `src/App.js`:
+
+```javascript
+const handleSubmit = (e) => {
+  e.preventDefault();
+  console.log('URL submitted:', url);
+  // Add your URL processing logic here
+};
+```
