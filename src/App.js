@@ -107,7 +107,7 @@ function App() {
       <main className="main-content">
         <div className="hero-section">
           <h1 className="main-heading">
-            On-brand campaign,<br />
+            On-brand assets,<br />
             made <span className="instant-text">instantly</span>.
           </h1>
           <p className="subheading">
@@ -124,7 +124,10 @@ function App() {
                 className="url-input"
               />
               <button type="submit" className="submit-button" disabled={!isValid && url !== ''}>
-                <img src={arrow} alt="Submit" className="arrow-icon" />
+                <span className="button-text">Try it</span>
+                <svg className="button-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path d="M-8.10623e-05 5.83333L10.1458 5.83333L5.47909 1.16667L6.66659 0L13.3333 6.66667L6.66659 13.3333L5.47909 12.1667L10.1458 7.5L-8.10623e-05 7.5V5.83333Z" fill="white"/>
+                </svg>
               </button>
             </div>
             {error && <p className="error-message">{error}</p>}
