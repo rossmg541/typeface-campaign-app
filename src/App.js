@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import './App.css';
-import logo from './assets/Logo.png';
+import logo from './assets/typeface-logo.svg';
 import arrow from './assets/Arrow_branch.png';
 import mockup from './assets/3d-documents.png';
 import ribbonBackground from './assets/red-white-ribbons.png';
 import orbVideo from './assets/orb-fast.mp4';
-import bgVideo from './assets/bg-video-2.mp4';
+import bgVideo from './assets/bg-video-3.mp4';
 
 function App() {
   const [url, setUrl] = useState('');
@@ -22,7 +22,7 @@ function App() {
 
   const validateUrl = (value) => {
     if (!value) {
-      setError('');
+      setError('Please enter a valid URL (e.g., yourwebsite.com)');
       setIsValid(false);
       return false;
     }
@@ -156,7 +156,7 @@ function App() {
 
   return (
     <div className="App">
-      <video autoPlay muted playsInline className="bg-video">
+      <video autoPlay loop muted playsInline className="bg-video">
         <source src={bgVideo} type="video/mp4" />
       </video>
       <div className="video-mask"></div>
@@ -187,7 +187,7 @@ function App() {
         <div className="hero-section">
           <h1 className="main-heading">
             On-brand assets,<br />
-            made <span className="instant-text">instantly</span>
+            made <span className="instant-text">effortless.</span>
           </h1>
           <p className="subheading">
             Just drop your URL and turn it into your brand engine​.
@@ -203,7 +203,7 @@ function App() {
                 className="url-input"
               />
               <button type="submit" className="submit-button">
-                <span className="button-text">Try it</span>
+                <span className="button-text">Go</span>
                 <svg className="button-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
                   <path d="M-8.10623e-05 5.83333L10.1458 5.83333L5.47909 1.16667L6.66659 0L13.3333 6.66667L6.66659 13.3333L5.47909 12.1667L10.1458 7.5L-8.10623e-05 7.5V5.83333Z" fill="white"/>
                 </svg>
