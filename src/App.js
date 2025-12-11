@@ -71,6 +71,8 @@ function App() {
         setTimeRemaining((prev) => {
           if (prev <= 1) {
             clearInterval(timer);
+            // Redirect to Typeface canvas
+            window.location.href = 'https://app.typeface.ai/canvas/669693?accountId=c1f3ca05-78ce-4bc8-8e29-d8b9a01a89ce&chatId=new';
             return 0;
           }
           return prev - 1;
