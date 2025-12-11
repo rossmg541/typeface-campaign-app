@@ -4,6 +4,8 @@ import logo from './assets/Logo.png';
 import arrow from './assets/Arrow_branch.png';
 import mockup from './assets/3d-documents.png';
 import ribbonBackground from './assets/red-white-ribbons.png';
+import orbVideo from './assets/orb-fast.mp4';
+import bgVideo from './assets/bg-video-2.mp4';
 
 function App() {
   const [url, setUrl] = useState('');
@@ -12,7 +14,11 @@ function App() {
   const [showSignInModal, setShowSignInModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showLoadingOverlay, setShowLoadingOverlay] = useState(false);
-  const [timeRemaining, setTimeRemaining] = useState(42);
+  const [timeRemaining, setTimeRemaining] = useState(16); // Total: 2s + 3s + 3s + 5s + 3s
+  const [loadingTitle, setLoadingTitle] = useState('Analysing your URL');
+  const [loadingDescription, setLoadingDescription] = useState('Brand agent is reviewing your URL');
+  const [progressPercentage, setProgressPercentage] = useState(0);
+  const [isCompleted, setIsCompleted] = useState(false);
 
   const validateUrl = (value) => {
     if (!value) {
@@ -41,12 +47,17 @@ function App() {
   const handleInputChange = (e) => {
     const value = e.target.value;
     setUrl(value);
-    validateUrl(value);
+    // Clear error when user types
+    setError('');
+    // Check if valid but don't show error while typing
+    const urlPattern = /^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)$/;
+    setIsValid(urlPattern.test(value));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // Only validate and show error on submit
     if (!validateUrl(url)) {
       return;
     }
@@ -62,25 +73,93 @@ function App() {
     setShowSignInModal(false);
     setIsLoading(true);
 
-    // Show overlay after a brief delay
-    setTimeout(() => {
-      setShowLoadingOverlay(true);
+    // Show overlay and start timer immediately
+    setShowLoadingOverlay(true);
 
-      // Start countdown timer
-      const timer = setInterval(() => {
-        setTimeRemaining((prev) => {
-          if (prev <= 1) {
-            clearInterval(timer);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }, 500);
+    // Start progress bar animation immediately
+    setTimeout(() => {
+      setProgressPercentage(10);
+    }, 50);
+
+    // Start countdown timer
+    const timer = setInterval(() => {
+      setTimeRemaining((prev) => {
+        const newTime = prev - 1;
+
+        if (newTime <= 0) {
+          clearInterval(timer);
+          setIsCompleted(true);
+          setProgressPercentage(100);
+          return 0;
+        }
+
+        // Update progress and titles based on time remaining
+        // 16-15s: Analysing your URL - first second
+        if (newTime === 15) {
+          setProgressPercentage(12);
+        }
+        // 15-14s: Analysing your URL - second second
+        else if (newTime === 14) {
+          setProgressPercentage(15);
+        }
+        // 14-13s: Analysing your URL - third second
+        else if (newTime === 13) {
+          setProgressPercentage(20);
+          setLoadingTitle('Importing your brand');
+          setLoadingDescription('Extracting color palette, image styles, fonts, text styles, etc.');
+        }
+        // 13-11s: Importing your brand (20% to 40%) - 2 seconds
+        else if (newTime > 11 && newTime <= 12) {
+          const elapsed = 13 - newTime;
+          const newProgress = 20 + (elapsed / 2) * 20;
+          setProgressPercentage(newProgress);
+        }
+        // At 11s: Show "Creating your brand kit"
+        else if (newTime === 11) {
+          setLoadingTitle('Creating your brand kit');
+          setProgressPercentage(45);
+        }
+        // 11-8s: Creating your brand kit (45% to 60%) - 3 seconds
+        else if (newTime > 8) {
+          const elapsed = 11 - newTime;
+          const newProgress = 45 + (elapsed / 3) * 15;
+          setProgressPercentage(newProgress);
+        }
+        // At 8s: Generating new content
+        else if (newTime === 8) {
+          setLoadingTitle('Generating new content');
+          setLoadingDescription('Using your brand kit to create on-brand assets');
+          setProgressPercentage(65);
+        }
+        // 8-4s: Generating new content (65% to 100%) - 4 seconds
+        else if (newTime > 3) {
+          const elapsed = 8 - newTime;
+          const newProgress = 65 + (elapsed / 4) * 35;
+          setProgressPercentage(newProgress);
+        }
+        // At 3s: Directing user to new project - already completed
+        else if (newTime === 3) {
+          setLoadingTitle('New assets & brand kit ready');
+          setLoadingDescription('Directing you to your new project');
+          setProgressPercentage(100);
+          setIsCompleted(true);
+        }
+        // 3-0s: Stay completed with green check and green progress bar
+        else if (newTime > 0) {
+          // Keep completed state
+        }
+
+        return newTime;
+      });
+    }, 1000);
   };
 
   return (
     <div className="App">
+      <video autoPlay muted playsInline className="bg-video">
+        <source src={bgVideo} type="video/mp4" />
+      </video>
+      <div className="video-mask"></div>
       <nav className="navbar">
         <div className="nav-container">
           <div className="nav-left">
@@ -108,10 +187,10 @@ function App() {
         <div className="hero-section">
           <h1 className="main-heading">
             On-brand assets,<br />
-            made <span className="instant-text">instantly</span>.
+            made <span className="instant-text">instantly</span>
           </h1>
           <p className="subheading">
-            Just drop your URL and generate an on-brand campaign instantly.
+            Just drop your URL and turn it into your brand engine​.
           </p>
 
           <form onSubmit={handleSubmit} className="input-form">
@@ -123,7 +202,7 @@ function App() {
                 placeholder="yourwebsite.com"
                 className="url-input"
               />
-              <button type="submit" className="submit-button" disabled={!isValid && url !== ''}>
+              <button type="submit" className="submit-button">
                 <span className="button-text">Try it</span>
                 <svg className="button-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
                   <path d="M-8.10623e-05 5.83333L10.1458 5.83333L5.47909 1.16667L6.66659 0L13.3333 6.66667L6.66659 13.3333L5.47909 12.1667L10.1458 7.5L-8.10623e-05 7.5V5.83333Z" fill="white"/>
@@ -145,7 +224,6 @@ function App() {
           <div className="modal-content">
             <div className="modal-header">
               <img src={logo} alt="Typeface" className="modal-logo" />
-              <span className="modal-brand">Typeface</span>
             </div>
 
             <h2 className="modal-title">Sign up to continue</h2>
@@ -162,7 +240,10 @@ function App() {
               </div>
 
               <button type="submit" className="continue-button">
-                Continue
+                <span className="button-text">Continue</span>
+                <svg className="button-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path d="M-8.10623e-05 5.83333L10.1458 5.83333L5.47909 1.16667L6.66659 0L13.3333 6.66667L6.66659 13.3333L5.47909 12.1667L10.1458 7.5L-8.10623e-05 7.5V5.83333Z" fill="white"/>
+                </svg>
               </button>
             </form>
 
@@ -199,163 +280,33 @@ function App() {
         </div>
       )}
 
-      {/* Loading Page */}
+      {/* Loading Modal */}
       {isLoading && (
-        <div className="loading-page">
-          <nav className="navbar">
-            <div className="nav-container">
-              <div className="nav-left">
-                <img src={logo} alt="Typeface" className="logo" />
-                <span className="brand-name">Typeface</span>
-              </div>
-              <div className="nav-center">
-                <a href="#product" className="nav-link">Product</a>
-                <a href="#use-cases" className="nav-link">Use Cases</a>
-                <a href="#partners" className="nav-link">Partners</a>
-                <a href="#resources" className="nav-link">Resources</a>
-                <a href="#company" className="nav-link">Company</a>
-              </div>
-              <div className="nav-right">
-                <a href="#signin" className="signin-link">Sign in</a>
-                <a href="#demo" className="demo-button">
-                  Get a demo
-                  <span className="arrow">›</span>
-                </a>
-              </div>
-            </div>
-          </nav>
-
-          <div className="loading-content">
-            <h1 className="loading-heading">
-              <span className="gradient-text">Instant</span> brand kit.<br />
-              <span className="gradient-text">Instant</span> assets.
-            </h1>
-            <p className="loading-subheading">
-              Just drop your URL and generate brand assets in less than 1 minute.
-            </p>
-
-            <form className="input-form">
-              <div className="input-wrapper">
-                <input
-                  type="text"
-                  value={url}
-                  readOnly
-                  className="url-input"
-                />
-                <button type="button" className="submit-button" disabled>
-                  <img src={arrow} alt="Submit" className="arrow-icon" />
-                </button>
-              </div>
-            </form>
-          </div>
-
-          <div className="ribbon-background">
-            <img src={ribbonBackground} alt="" className="ribbon-image" />
-          </div>
-
-          {/* Loading Overlay */}
-          {showLoadingOverlay && (
-            <div className="loading-overlay">
+        <div className="modal-overlay">
               <div className="loading-card">
                 <div className="loading-icon">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" fill="#FD243E"/>
-                    <path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6z" fill="#FD243E" opacity="0.3"/>
-                  </svg>
+                  <video autoPlay loop muted playsInline className={`orb-video ${isCompleted ? 'completed' : ''}`} src={orbVideo} />
                 </div>
-                <h3 className="loading-title">Importing your brand</h3>
-                <p className="loading-description">
-                  Brand Agent is reviewing your URL and creating a<br />
-                  personalized brand kit for you.
+                <h3 key={loadingTitle} className="loading-title">{loadingTitle}</h3>
+                <p key={loadingDescription} className="loading-description">
+                  {loadingDescription}
                 </p>
 
                 <div className="progress-container">
-                  <svg className="progress-svg" viewBox="0 0 500 40" preserveAspectRatio="none">
-                    <defs>
-                      <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#FD243E" />
-                        <stop offset="25%" stopColor="#FFFFFF" />
-                        <stop offset="50%" stopColor="#FD243E" />
-                        <stop offset="75%" stopColor="#FFFFFF" />
-                        <stop offset="100%" stopColor="#FD243E" />
-                      </linearGradient>
-                      <clipPath id="progressClip">
-                        <rect x="0" y="0" width={((42 - timeRemaining) / 42) * 500} height="40" />
-                      </clipPath>
-                      <mask id="progressMask">
-                        {/* Mask rectangles */}
-                        <rect x="0" y="0" width="8" height="40" fill="white" />
-                        <rect x="12" y="0" width="8" height="40" fill="white" />
-                        <rect x="24" y="0" width="8" height="40" fill="white" />
-                        <rect x="36" y="0" width="8" height="40" fill="white" />
-                        <rect x="48" y="0" width="8" height="40" fill="white" />
-                        <rect x="60" y="0" width="8" height="40" fill="white" />
-                        <rect x="72" y="0" width="4" height="40" fill="white" />
-                        <rect x="80" y="0" width="4" height="40" fill="white" />
-                        <rect x="88" y="0" width="4" height="40" fill="white" />
-                        <rect x="96" y="0" width="4" height="40" fill="white" />
-                        <rect x="104" y="0" width="8" height="40" fill="white" />
-                        <rect x="116" y="0" width="8" height="40" fill="white" />
-                        <rect x="128" y="0" width="8" height="40" fill="white" />
-                        <rect x="140" y="0" width="2" height="40" fill="white" />
-                        <rect x="146" y="0" width="2" height="40" fill="white" />
-                        <rect x="152" y="0" width="2" height="40" fill="white" />
-                        <rect x="158" y="0" width="2" height="40" fill="white" />
-                        <rect x="164" y="0" width="8" height="40" fill="white" />
-                        <rect x="176" y="0" width="8" height="40" fill="white" />
-                        <rect x="188" y="0" width="8" height="40" fill="white" />
-                        <rect x="200" y="0" width="8" height="40" fill="white" />
-                        <rect x="212" y="0" width="8" height="40" fill="white" />
-                        <rect x="224" y="0" width="2" height="40" fill="white" />
-                        <rect x="230" y="0" width="2" height="40" fill="white" />
-                        <rect x="236" y="0" width="2" height="40" fill="white" />
-                        <rect x="242" y="0" width="8" height="40" fill="white" />
-                        <rect x="254" y="0" width="8" height="40" fill="white" />
-                        <rect x="266" y="0" width="8" height="40" fill="white" />
-                        <rect x="278" y="0" width="2" height="40" fill="white" />
-                        <rect x="284" y="0" width="2" height="40" fill="white" />
-                        <rect x="290" y="0" width="2" height="40" fill="white" />
-                        <rect x="296" y="0" width="8" height="40" fill="white" />
-                        <rect x="308" y="0" width="8" height="40" fill="white" />
-                        <rect x="320" y="0" width="8" height="40" fill="white" />
-                        <rect x="332" y="0" width="8" height="40" fill="white" />
-                        <rect x="344" y="0" width="8" height="40" fill="white" />
-                        <rect x="356" y="0" width="2" height="40" fill="white" />
-                        <rect x="362" y="0" width="2" height="40" fill="white" />
-                        <rect x="368" y="0" width="2" height="40" fill="white" />
-                        <rect x="374" y="0" width="2" height="40" fill="white" />
-                        <rect x="380" y="0" width="2" height="40" fill="white" />
-                        <rect x="386" y="0" width="2" height="40" fill="white" />
-                        <rect x="392" y="0" width="2" height="40" fill="white" />
-                        <rect x="398" y="0" width="8" height="40" fill="white" />
-                        <rect x="410" y="0" width="8" height="40" fill="white" />
-                        <rect x="422" y="0" width="8" height="40" fill="white" />
-                        <rect x="434" y="0" width="8" height="40" fill="white" />
-                        <rect x="446" y="0" width="2" height="40" fill="white" />
-                        <rect x="452" y="0" width="2" height="40" fill="white" />
-                        <rect x="458" y="0" width="2" height="40" fill="white" />
-                        <rect x="464" y="0" width="2" height="40" fill="white" />
-                        <rect x="470" y="0" width="2" height="40" fill="white" />
-                        <rect x="476" y="0" width="2" height="40" fill="white" />
-                        <rect x="482" y="0" width="2" height="40" fill="white" />
-                        <rect x="488" y="0" width="2" height="40" fill="white" />
-                        <rect x="494" y="0" width="2" height="40" fill="white" />
-                      </mask>
-                    </defs>
-                    <rect
-                      x="0"
-                      y="0"
-                      width="500"
-                      height="40"
-                      fill="url(#progressGradient)"
-                      mask="url(#progressMask)"
-                      clipPath="url(#progressClip)"
-                    />
-                  </svg>
+                  <div className="progress-bar-wrapper">
+                    <div className={`progress-bar ${isCompleted ? 'completed' : ''}`} style={{ width: `${progressPercentage}%` }}></div>
+                  </div>
                 </div>
 
                 <div className="timer-section">
-                  <span className="timer">{timeRemaining} sec</span>
+                  {!isCompleted ? (
+                    <span className="timer">{timeRemaining} sec</span>
+                  ) : (
+                    <svg className="check-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="12" r="10" fill="#2AE88C"/>
+                      <path d="M8 12L11 15L16 9" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  )}
                 </div>
 
                 <div className="notification-text">
@@ -363,11 +314,9 @@ function App() {
                     <path d="M8 2C6.34315 2 5 3.34315 5 5V7.5C5 8.163 4.663 8.763 4.118 9.118L3.382 9.618C2.764 10.014 3.033 11 3.764 11H12.236C12.967 11 13.236 10.014 12.618 9.618L11.882 9.118C11.337 8.763 11 8.163 11 7.5V5C11 3.34315 9.65685 2 8 2Z" stroke="#9CA3AF" strokeWidth="1.5"/>
                     <path d="M6.5 11C6.5 12.3807 7.11929 13 8 13C8.88071 13 9.5 12.3807 9.5 11" stroke="#9CA3AF" strokeWidth="1.5" strokeLinecap="round"/>
                   </svg>
-                  Feel free to leave, we'll notify you once your brand has been imported
+                  Feel free to leave, we'll notify you once your brand kit & new assets are ready.
                 </div>
               </div>
-            </div>
-          )}
         </div>
       )}
     </div>
